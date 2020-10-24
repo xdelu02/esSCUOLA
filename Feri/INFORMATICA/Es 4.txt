@@ -1,0 +1,37 @@
+Query:
+    1)SELECT
+        I.Cognome,
+        I.Nome
+    FROM
+        (Impiegato as I INNER JOIN Dipartimento as D
+        ON I.Matricola = D.Direttore)
+            INNER JOIN Progetto as Pr
+            ON I.Matricola = Pr.Responsabile
+    WHERE
+        Pr.ImportoStanziato > 100000
+
+    2)SELECT
+        Pr.Nome
+    FROM
+        ((Impiegato as I INNER JOIN Partecipazione as Par
+        ON I.Matricola = Par.Impiegato)
+            INNER JOIN Progetto as Pr
+            ON Par.Progetto = Pr.Sigla)
+                INNER JOIN Impiegati as Resp
+                ON Pr.Responsabile = Resp.Matricola
+    WHERE
+        I.Cognome = ‘Alberti’ AND
+        Resp.Cognome = ‘Giani’
+    
+    3)SELECT
+        I.Cognome,
+        I.Nome
+    FROM
+            ((Impiegati as I INNER JOIN Partecipazione as Par
+            ON I.Matricola = Par.Impiegato)
+                INNER JOIN Progetto as Pr
+                ON Par.Progetto = Pr.Sigla)
+                    INNER JOIN Impiegato as Resp
+                    ON Pr.Responsabile = Resp.Matricola
+        WHERE
+            Resp.Dipartimento = I.Dipartimento

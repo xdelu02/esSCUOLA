@@ -1,0 +1,96 @@
+Inserimento dati:
+
+    INSERT INTO Viaggio (NomeLocalità, Durata, Costo, DataPartenza)
+    VALUES
+        ("Spezia", 15, 2000, "2020-02-04"),
+        ("Roma", 10, 3000, "2020-01-10"),
+        ("NYC", 20, 20000, "2021-11-23"),
+        ("Londra", 30, 20000, "2023-07-04"),
+        ("Milano", 7, 2000, "2020-10-04"),
+        ("Mosca", 10, 50000, "2021-12-02"),
+        ("Parigi", 5, 2000, "2024-11-03"),
+        ("Monaco", 15, 40000, "2025-07-04");
+    
+    INSERT INTO Turista (Nome, Cognome, DataNascita, Telefono)
+    VALUES
+        ("Mario", "Rossi", "2002-07-04", "338 365 8989"),
+        ("Luigi", "Verdi", "1999-10-01", "338 376 8787"),
+        ("Luca", "Gialli", "1980-02-03", "338 898 8989"),
+        ("Gigi", "Pigi", "1989-07-11", "338 365 8989"),
+        ("Alessio", "Bianchi", "2000-10-23", "388 365 8989");
+        
+    INSERT INTO Prenotazione (id_Turista, id_Viaggio, DataPrenotazione, TipoPagamento)
+    VALUES
+        (1, 1, "2020-10-02", "Carta"),
+        (2, 2, "2020-10-02", "Bancomat"),
+        (3, 3, "2020-10-02", "Assegno"),
+        (4, 4, "2020-10-02", "Contanti"),
+        (5, 5, "2020-10-02", "Carta"),
+        (1, 6, "2020-10-02", "Contanti")
+
+Query:
+    1)SELECT *
+    FROM
+        Viaggio
+    WHERE
+        Durata < 5
+    
+    2)SELECT
+        Viaggio.NomeLocalità
+    FROM
+        Viaggio
+    WHERE
+        Durata > 7 AND Durata < 10 AND
+        Costo < 500
+
+    3)SELECT
+        Turista.*
+    FROM
+        Turista
+    WHERE
+        Cognome LIKE "Ro%"
+    ORDER BY Cognome ASC
+
+    4)SELECT
+        DISTINCT Viaggio.NomeLocalità
+    FROM
+    Viaggio INNER JOIN Prenotazione
+        ON Viaggio.id_Viaggio = Prenotazione.id_Viaggio
+        INNER JOIN Turista
+            ON Prenotazione.id_Turista = Turista.id_Turista
+    WHERE
+        Turista.Nome = "Mario" AND
+        Turista.Cognome = "Rossi"
+    
+    5)SELECT
+        DISTINCT Prenotazione.TipoPagamento
+    FROM
+        Prenotazione INNER JOIN Turista
+        ON Prenotazione.id_Turista = Turista.id_Turista
+    WHERE
+        Turista.Nome = "Francesca" AND
+        Turista.Cognome = "Verdi"
+    
+    6)SELECT
+        Viaggio.NomeLocalità, Viaggio.Durata
+    FROM
+        Prenotazione INNER JOIN Viaggio
+        ON Prenotazione.id_Turista = Viaggio.id_Viaggio
+    WHERE
+        YEAR(Prenotazione.DataPrenotazione) = "2018" AND
+            MONTH(Prenotazione.DataPrenotazione) = "12"
+    
+    7)SELECT
+        Turista.Nome, Turista.Cognome, SUM(Viaggio.Costo)
+    FROM
+        Prenotazione INNER JOIN Viaggio
+        ON Prenotazione.id_Turista = Viaggio.id_Viaggio
+        INNER JOIN Turista
+        ON Prenotazione.id_Turista = Turista.id_Turista
+    GROUP BY Turista.Nome
+    
+    8)SELECT
+        AVG(Viaggio.Costo)
+    FROM
+        Prenotazione INNER JOIN Viaggio
+        ON Prenotazione.id_Turista = Viaggio.id_Viaggio

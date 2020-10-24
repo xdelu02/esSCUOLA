@@ -1,0 +1,199 @@
+Create Tables:
+    CREATE TABLE IF NOT EXISTS CompagniaAerea (
+        idCA INT(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+        nomeCA VARCHAR(45) NOT NULL,
+        nazionalitaCA VARCHAR(45) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS Volo (
+    idV INT(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+        passeggeriV INT(11) NOT NULL,
+        dataV DATE NOT NULL,
+        compagniaAereaV INT(11) NOT NULL,
+        trattaDiVoloV INT(11) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS TrattaDiVolo (
+    idTDV INT(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+        partenzaTDV INT(11) NOT NULL,
+        arrivoTDV INT(11) NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS Aeroporto (
+    idA INT(11) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+        nomeA VARCHAR(45) NOT NULL,
+        cittaA VARCHAR(45) NOT NULL,
+        nazioneA VARCHAR(45) NOT NULL
+    );
+
+Insert Values:
+    INSERT INTO CompagniaAerea (nomeCA, nazionalitaCA)
+    VALUES
+        ("Vueling", "Spagna"),
+        ("Alitalia", "Italia"),
+        ("BritishAirLines", "Inghilterra"),
+        ("VuelaFuerte", "Mexico"),
+        ("Raianair", "Francia"),
+        ("IndiopolAir", "India"),
+        ("AirChina", "Cina"),
+        ("GermanyAirComp", "Germania"),
+        ("MoroccoFly", "Marocco");
+        
+    INSERT INTO Aeroporto (nomeA, cittaA, nazioneA)
+    VALUES
+        ("Madrid_Aeroporto", "Madrid", "Spagna"),
+        ("Firenze_Aeroporto", "Firenze", "Italia"),
+        ("Roma_Aeroporto", "Roma", "Italia"),
+        ("Milano_Aeroporto", "Milano", "Italia"),
+        ("Tunisi_Aeroporto", "Tunisi", "Tunisia"),
+        ("Pechino_Aeroporto", "Pechino", "China"),
+        ("Parigi_Aeroporto", "Parigi", "Francia"),
+        ("Londra_Aeroporto", "Londra", "Inghilterra"),
+        ("Monaco_Aeroporto", "Monaco", "Germania");
+        
+    INSERT INTO TrattaDiVolo (partenzaTDV, arrivoTDV)
+    VALUES
+        (1, 9),
+        (2, 8),
+        (3, 7),
+        (4, 6),
+        (5, 5),
+        (6, 4),
+        (7, 3),
+        (8, 2),
+        (9, 1),
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 6),
+        (5, 7),
+        (2, 9);
+        
+    INSERT INTO Volo (passeggeriV, dataV, compagniaAereaV, trattaDiVoloV)
+    VALUES
+        (10, "2020-10-19", 1, 1),
+        (110, "2020-10-19", 2, 2),
+        (30, "2020-10-19", 3, 3),
+        (400, "2020-10-19", 4, 4),
+        (40, "2020-10-19", 5, 5),
+        (20, "2020-10-19", 6, 6),
+        (10, "2020-10-19", 7, 7),
+        (40, "2020-10-19", 8, 8),
+        (50, "2020-10-19", 9, 9),
+        (70, "2020-10-19", 1, 10),
+        (80, "2020-10-19", 2, 11),
+        (90, "2020-10-19", 3, 12),
+        (100, "2020-10-19", 5, 13),
+        (900, "2020-10-19", 6, 14),
+        (300, "2020-10-19", 7, 15),
+        (15, "2020-10-19", 4, 1),
+        (25, "2020-10-19", 3, 2),
+        (35, "2020-10-19", 8, 3),
+        (45, "2020-10-19", 9, 4),
+        (65, "2020-10-19", 2, 5),
+        (55, "2020-10-19", 1, 6),
+        (75, "2020-10-19", 7, 7),
+        (11, "2020-10-19", 8, 8),
+        (12, "2020-10-19", 5, 9);
+
+Query:
+    1)SELECT
+        Volo.dataV, SUM(Volo.passeggeriV)
+    FROM
+        Volo
+    GROUP BY Volo.dataV
+    
+    2)SELECT
+        CompagniaAerea.nomeCA, CompagniaAerea.NazionalitaCA, SUM(Volo.passeggeriV)
+    FROM
+        CompagniaAerea LEFT JOIN Volo
+        ON CompagniaAerea.idCA = Volo.compagniaAereaV
+    GROUP BY CompagniaAerea.NomeCA
+    ORDER BY SUM(Volo.passeggeriV) DESC
+    
+    3)SELECT
+        CompagniaAerea.NazionalitaCA, SUM(Volo.passeggeriV)
+    FROM
+        CompagniaAerea LEFT JOIN Volo
+        ON CompagniaAerea.idCA = Volo.compagniaAereaV
+    GROUP BY CompagniaAerea.NazionalitaCA
+    ORDER BY SUM(Volo.passeggeriV) DESC
+    
+    4)SELECT
+        DISTINCT(TrattaDiVolo.idTDV),
+        Part.NomeA as Partenza,
+        Arr.NomeA as Arrivo
+    FROM
+        TrattaDiVolo INNER JOIN Aeroporto as Part
+        ON TrattaDiVolo.partenzaTDV = Part.idA
+        INNER JOIN Aeroporto Arr
+        ON TrattaDiVolo.arrivoTDV = Part.idA
+        INNER JOIN Volo
+        ON TrattaDiVolo.idTDV = Volo.trattaDiVoloV
+    WHERE
+        Volo.dataV = "2020-10-19"
+
+    5)SELECT
+        Part.NomeA as Partenza,
+        Arr.NomeA as Arrivo,
+        PassegeriV as nPasseggeri,
+        DataV as Data
+    FROM
+        TrattaDiVolo INNER JOIN Aeroporto as Part
+        ON TrattaDiVolo.partenzaTDV = Part.idA
+        INNER JOIN Aeroporto Arr
+        ON TrattaDiVolo.arrivoTDV = Part.idA
+        INNER JOIN Volo
+        ON TrattaDiVolo.idTDV = Volo.trattaDiVoloV
+    WHERE
+    Volo.dataV between "1999-05-10" AND "2021-11-20"
+    ORDER BY Part.NomeA ASC
+    
+    6)SELECT
+        NomeCA,
+        COUNT(Volo.idV)
+    FROM
+        CompagniaAerea LEFT JOIN Volo
+        ON CompagniaAerea.idCA = Volo.compagniaAereaV
+    GROUP BY CompagniaAerea.NomeCA
+    ORDER BY COUNT(Volo.idV) DESC
+    
+    7)SELECT
+        Volo.PasseggeriV
+    FROM
+        TrattaDiVolo INNER JOIN Aeroporto as Part
+        ON TrattaDiVolo.partenzaTDV = Part.idA
+        INNER JOIN Volo
+        ON TrattaDiVolo.idTDV = Volo.trattaDiVoloV
+    WHERE
+    Part.NomeA = ”Amerigo Vespucci” AND
+    HAVING
+        Volo.PasseggeriV = MAX(Volo.PasseggeriV)
+
+    8)SELECT
+        Part.NomeA as Partenza,
+        Arr.NomeA as Arrivo,
+        COUNT(Volo.IdV) as nVoli
+    FROM
+        TrattaDiVolo INNER JOIN Aeroporto as Part
+        ON TrattaDiVolo.partenzaTDV = Part.idA
+        INNER JOIN Aeroporto Arr
+        ON TrattaDiVolo.arrivoTDV = Part.idA
+        INNER JOIN Volo
+        ON TrattaDiVolo.idTDV = Volo.trattaDiVoloV
+    GROUP BY TrattaDiVolo.idTDV
+    HAVING
+        COUNT(Volo.IdV) >= 7
+
+    9)SELECT
+        CompagniaAerea.nomeCA,
+        SUM(Volo.PasseggeriV) as nPasseggeri
+    FROM
+        CompagniaAerea INNER JOIN Volo
+        ON CompagniaAerea.idCA = Volo.compagniaAereaV
+    WHERE
+        MONTH(Volo.DataV) = “03” AND
+        YEAR(Volo.DataV) = “2018” 
+    GROUP BY CompagniaAerea.NomeCA
+    HAVING
+        SUM(Volo.PasseggeriV) >= 400

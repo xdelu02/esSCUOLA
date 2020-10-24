@@ -1,0 +1,92 @@
+Query:
+	
+	1)SELECT
+		Matricola, Cognome
+	FROM
+		Impiegato
+	WHERE
+		Stipendio > 2000
+
+	2)SELECT
+		Impiegato.Cognome, Impiegato.Stipendio
+	FROM
+		Impiegato, Dipartimento
+	WHERE
+		Impiegato.Dipartimento = Dipartimento.Codice AND
+		Dipartimento.CittaSede = “Roma”
+
+	3)SELECT
+		Impiegato.Cognome, Dipartimento.Nome as NomeDipartimento
+	FROM
+		Impiegato, Dipartimento
+	WHERE
+		Impiegato.Dipartimento = Dipartimento.Codice
+	
+	4)SELECT
+		Impiegato.Cognome as CognomiDirettori
+	FROM
+		Impiegato, Dipartimento
+	WHERE
+		Dipartimento.Direttore = Impiegato.Matricola
+
+	5)SELECT
+	Progetto.Nome as NomeProgetto, Impiegato.Cognome as CognomeImpiegato
+	FROM
+		Progetto, Impiegato
+	WHERE
+		Progetto.Responsabile = Impiegato.Matricola
+
+	6)SELECT
+		Progetto.Nome as NomeProgetto, Impiegato.Nome as NomeImpiegato
+	FROM
+		Progetto, Impiegato, Partecipazione
+	WHERE
+		Progetto.ImportoStanziato > 100000 AND
+			Partecipazione.Impiegato = Impiegato.Matricola AND
+		Partecipazione.Progetto = Progetto.Sigla
+
+	7)SELECT
+		Impiegato.Cognome
+	FROM
+		Impiegato, 
+		(SELECT
+			Dipartimento.Codice as CodiceDip,
+			Dipartimento.Direttore as DirettoreDip,
+			Impiegato.Matricola as MatricolaDir,
+			Impiegato.Stipendio as StipendioDir
+		FROM
+				Impiegato, Dipartimento
+			WHERE
+				Dipartimento.Direttore = Impiegato.Matricola) as Dipartimenti
+	WHERE
+		Impiegato.Dipartimento = Dipartimenti.CodiceDip AND
+		Impiegato.Stipendio > Dipartimenti.StipendioDir
+
+	8)SELECT
+		Direttori.CognomeDir,
+		Responsabili.CognomeResp
+	FROM
+		(SELECT
+			Impiegato.Matricola as MatricolaDir,
+			Impiegato.Cognome as CognomeDir
+		FROM
+			Impiegato, Dipartimento
+			WHERE
+				Dipartimento.Direttore = Impiegato.Matricola) as Direttori,
+		(SELECT
+			Impiegato.Matricola as MatricolaResp,
+			Impiegato.Cognome as CognomeResp
+		FROM
+			Impiegato, Progetto, Partecipazione
+			WHERE
+				Impiegato.Matricola = Partecipazione.Impiegato AND
+				Partecipazione.Progetto = Progetto.Sigla AND
+				Progetto.Responsabile = Impiegato.Matricola) as Responsabili
+
+	9)SELECT
+		DISTINCT(Dipartimento.Nome)
+	FROM
+		Dipartimento, Impiegato
+	WHERE
+		Impiegato.Dipartimento = Dipartimento.Codice AND
+		Impiegato.Stipendio > 2500

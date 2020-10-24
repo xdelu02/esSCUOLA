@@ -1,0 +1,114 @@
+Query:
+    1)SELECT
+        Auto.Targa,
+        Auto.Marca
+    FROM
+        Automobile as Auto INNER JOIN AutoCoinvolte
+        ON Auto.Targa = AutoCoinvolte.Targa
+        INNER JOIN Sinistro
+        ON AutoCoinvolte.id_sinistro = Sinistro.id
+    WHERE
+        Auto.Potenza > 90 AND
+    MONTH(Sinistro.Data) = "03"
+    
+    2)SELECT
+        COUNT(AutoCoinvolte.Targa)
+    FROM
+        Automobile as Auto INNER JOIN AutoCoinvolte
+        ON Auto.Targa = AutoCoinvolte.Targa
+        INNER JOIN Sinistro
+        ON AutoCoinvolte.id_sinistro = Sinistro.id
+    WHERE
+        Auto.Marca = "AUDI" AND
+        YEAR(Sinistro.Data) = "2017" AND
+        Sinistro.Localita = "Firenze"
+    GROUP BY Auto.Marca
+    HAVING
+        COUNT(AutoCoinvolte.Targa) > 3
+    
+    3)SELECT
+        Proprietario.*
+    FROM
+        Proprietario INNER JOIN Automobile as Auto
+        ON Proprietario.Codice_fiscale = Auto.Cf_Proprietario
+        INNER JOIN AutoCoinvolte
+        ON Auto.Targa = AutoCoinvolte.Targa
+        INNER JOIN Sinistro
+        ON AutoCoinvolte.id_sinistro = Sinistro.id
+    WHERE
+            Sinistro.Localita = "Roma"
+    GROUP BY Proprietario.codice_fiscale
+    HAVING
+        MAX(Auto.potenza)
+    LIMIT 1
+
+    4)SELECT
+        Proprietario.*, COUNT(AutoCoinvolte.Targa)
+    FROM
+        Proprietario INNER JOIN Automobile as Auto
+        ON Proprietario.Codice_fiscale = Auto.Cf_Proprietario
+        INNER JOIN AutoCoinvolte
+        ON Auto.Targa = AutoCoinvolte.Targa
+        INNER JOIN Sinistro
+        ON AutoCoinvolte.id_sinistro = Sinistro.id
+    WHERE
+        Sinistro.Localita = "Milano" AND
+        YEAR(Sinistro.Data) = "2019"
+    GROUP BY Auto.Targa
+    HAVING
+        MAX(Auto.potenza)
+    
+    5)SELECT
+        Proprietario.*
+    FROM
+        Proprietario INNER JOIN Automobile as Auto
+        ON Proprietario.Codice_fiscale = Auto.Cf_Proprietario
+        INNER JOIN AutoCoinvolte
+    ON Auto.Targa = AutoCoinvolte.Targa
+        INNER JOIN Sinistro
+        ON AutoCoinvolte.id_sinistro = Sinistro.id
+        INNER JOIN Polizza
+        ON Auto.codice_Polizza = Polizza.Codice
+        INNER JOIN Assicurazione
+        ON Assicurazione.Codice = Polizza.Codice_Assicurazione
+    WHERE
+        Assicurazione.Nome = "SARA" AND
+        YEAR(Sinistro.Data) < "2015"
+    
+    6)SELECT
+        SUM(AutoCoinvolte.importo_danno)
+    FROM
+        AutoCoinvolte INNER JOIN Sinistro
+        ON Sinistro.id = AutoCoinvolte.id_sinistro
+    WHERE
+        Sinistro.Localita = "Firenze" AND
+        Sinistro.Data = "2018-10-20"
+    
+    7)SELECT
+        Assicurazione.*,
+        COUNT(Sinistro.id)
+    FROM
+        Assicurazione LEFT JOIN Polizza
+        ON Polizza.codice_assicurazione = Assicurazione.codice
+        INNER JOIN Automobile as Auto
+        ON Automobile.codice_polizza = Polizza.codice
+        INNER JOIN AutoCoinvolte
+        ON AutoCoinvolte.targa = Automobile.targa
+        INNER JOIN Sinistro
+        ON Sinistro.id = AutoCoinvolte.id_sinistro
+    GROUP BY Assicurazione.nome
+    
+    8)SELECT
+        Proprietario.*
+    FROM
+    Proprietario INNER JOIN Automobile as Auto
+        ON Auto.cf_proprietario = codice_fiscale
+    INNER JOIN Polizza
+        ON Polizza.codice = Auto.codice_polizza
+        INNER JOIN AutoCoinvolte
+        ON AutoCoinvolte.targa = Auto.targa
+        INNER JOIN Sinistro
+        ON AutoCoinvolte.id_sinistro = Sinistro.id
+    WHERE
+        Sinistro.data NOT BETWEEN date("0000-00-00") AND
+        Polizza.data_scadenza

@@ -1,0 +1,113 @@
+Query:
+
+    1)SELECT
+        MAX(Impiegato.Stipendio)
+    FROM
+        Impiegato
+    
+    2)SELECT
+        Impiegato.Cognome, Dipartimento.Nome
+    FROM
+        Impiegato LEFT JOIN Dipartimento
+        ON Impiegato.Matricola = Dipartimento.Direttore
+    
+    3)SELECT
+        COUNT(Impiegati.Nome)
+    FROM
+        Impiegato INNER JOIN Dipartimento
+        ON Impiegato.Dipartimento = Dipartimento.Codice
+    WHERE
+        Dipartimento.Nome = “Vendite”
+    
+    4)SELECT
+        SUM(Impiegato.Stipendio)
+    FROM
+        Impiegato INNER JOIN Partecipazione
+        ON Impiegato.Codice = Partecipazione.Impiegato
+    WHERE
+        Partecipazione.Progetto = “P03”
+    
+    5)SELECT
+        SUM(I.Stipendio)
+    FROM
+        ((Impiegato as I INNER JOIN Partecipazione as Par
+        ON I.Matricola = Par.Impiegato)
+            INNER JOIN Progetto as Pr
+            ON Par.Progetto = Pr.Sigla)
+                INNER JOIN Dipartimento as D
+                ON I.Dipartimento = D.Codice
+    WHERE
+        D.Nome = “Vendite” AND
+        Pr.Sigla = “P05”
+    
+    6)SELECT
+        DISTINCT(I.Nome, I.Cognome)
+    FROM
+        Partecipazione as Par INNER JOIN Impiegato as I
+        ON Par.Impiegato = I.Matricola
+
+    7)SELECT
+        I.Cognome as CognImp,
+        I.Nome as NomeImp,
+        Resp.Cognome as CognomeResp
+    FROM
+        (SELECT *
+        FROM
+            (Partecipazione as Par INNER JOIN Impiegato as I
+            ON Par.Impiegato = I.Matricola)
+                INNER JOIN Progetto as Pr
+                ON Par.Progetto = Pr.Sigla
+        ) LEFT JOIN Impiegato as Resp
+        ON Pr.Responsabile = Resp.Matricola
+    
+    8)SELECT
+        I.Nome as NomeImp,
+        I.Cognome as CognImp,
+        Pr.Nome
+    FROM
+        (Impiegato as I INNER JOIN Partecipazione as Par
+        ON I.Matricola = Par.Impiegato)
+            INNER JOIN Progetto as Pr
+            ON Par.Progetto = Pr.Progetto
+    WHERE
+        Pr.Rappresentante = NULL
+    
+    9)SELECT
+        DISTINCT(D.Nome)
+    FROM
+        Impiegato as I INNER JOIN Dipartimento as D
+        ON I.Dipartimento = D.Codice
+    WHERE
+        I.Cognome Like “M%”
+    
+    10)SELECT
+        DISTINCT(D.Nome)
+    FROM
+        Impiegato as I INNER JOIN Dipartimento as D
+        ON I.Dipartimento = D.Codice
+    WHERE
+        I.Cognome Like “%er%”
+
+    11)SELECT
+        DISTINCT(
+            D.Codice as CodiceDipartimento,
+            D.Nome as NomeDipartimento,
+            Pr.Sigla as SiglaProgetto,
+            Pr.Nome as NomeProgetto)
+    FROM
+        (SELECT *
+        FROM
+            ((Dipartimento as D INNER JOIN Impiegato as Direttori
+            ON D.Direttore = Direttori.Matricola)
+                INNER JOIN Partecipazione as Par
+                ON Direttori.Matricola = Par.Impiegato)
+                    INNER JOIN Progetto as Pr
+                    ON Par.Progetto = Pr.Sigla
+        ) LEFT JOIN (SELECT *
+            FROM
+                (Dipartimento as Dip INNER JOIN Impiegato as Diret
+                ON Dip.Direttore = Diret.Matricola)
+                    INNER JOIN Progetto
+                    ON Progetto.Responsabile = Diret.Matricola
+        )
+        ON Direttori.Matricola = Diret.Matricola
