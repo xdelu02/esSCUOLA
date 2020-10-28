@@ -1,0 +1,116 @@
+USE quintaa_esercizio8;
+
+/*
+	ROMANZI (CodiceR, Titolo, NomeAut*, Anno)
+	PERSONAGGI (NomeP, CodiceR*, sesso, ruolo)
+	AUTORI (NomeAut, AnnoN, AnnoM, Nazione)
+	FILM (CodiceF, Titolo, Regista, Produttore, Anno, CodiceR*)
+*/
+
+/*
+	Query 1.
+    Il titolo dei romanzi del 19° secolo.
+*/
+SELECT Titolo
+FROM Romanzi
+WHERE Anno LIKE "19__";
+    
+/*
+	Query 2.
+    Il titolo, l’autore e l’anno di pubblicazione dei romanzi di autori russi,
+		ordinati per autore e, per lo stesso autore, ordinati per anno di pubblicazione.
+*/
+SELECT
+	Romanzi.Titolo,
+    Romanzi.Autore,
+	Romanzi.Anno
+FROM
+	Romanzi INNER JOIN Autori
+    ON Romanzi.NomeAutore = Autori.NomeAutore
+WHERE
+	Autori.Nazione = "Russia";
+
+/*
+	Query 3.
+    I personaggi principali (ruolo =”P”) dei romanzi di autori viventi.
+*/
+SELECT
+	Personaggi.*
+FROM
+	Personaggi INNER JOIN Romanzi
+    ON Personaggi.CodiceR = Romanzi.CodiceR
+    INNER JOIN Autori
+    ON Romanzi.NomeAutore = Autori.NomeAutore
+WHERE
+	Autori.AnnoM IS NOT NULL AND
+	Personaggi.Ruolo = "P";
+
+/*
+	Query 4.
+    I romanzi dai quali è stato tratto un film con lo stesso titolo del romanzo.
+*/
+SELECT
+	Romanzi.*
+FROM
+	Romanzi INNER JOIN Film
+    ON Romanzi.CodiceR = Film.CodiceR
+WHERE
+	Film.Titolo = Romanzi.Titolo;
+
+/*
+	Query 5.
+    Il titolo, il regista e l’anno dei film tratti dal romanzo “Robin Hood”.
+*/
+SELECT
+	Film.Titolo,
+    Film.Regista,
+    Film.Anno
+FROM
+	Romanzi INNER JOIN Film
+    ON Romanzi.CodiceR = Film.CodiceR
+WHERE
+	Film.Titolo = "Robin Hood";
+
+/*
+	Query 6.
+    Per ogni autore italiano, l’anno del primo e dell’ultimo romanzo.
+*/
+SELECT
+	Autori.NomeAutore,
+    Primo.Anno,
+    Ultimo.Anno
+FROM
+	Autori INNER JOIN Romanzi as Primo
+    ON Autori.NomeAutore = Primo.NomeAutore
+    INNER JOIN Romanzi as Ultimo
+    ON Autori.NomeAutore = Ultimo.NomeAutore
+GROUP BY Autori.NomeAutore
+HAVING
+	MIN(Primo.Anno) AND
+    MAX(Ultimo.Anno);
+
+/*
+	Query 7.
+    I nomi dei personaggi che compaiono in più di un romanzo, ed il numero dei romanzi nei quali compaiono.
+*/
+SELECT
+	Personaggi.NomeP,
+    COUNT(Romanzi.CodiceR)
+FROM
+	Personaggi INNER JOIN Romanzi
+    ON Personaggi.CodiceR = Romanzi.CodiceR
+GROUP BY Personaggi.NomeP;
+
+/*
+	Query 8.
+    I romanzi di autori italiani dai quali è stato tratto più di un film.
+*/
+SELECT
+	Romanzi.*
+FROM
+	Romanzi INNER JOIN Autori
+    ON Romanzi.NomeAutore = Autori.NomeAutore
+    INNER JOIN FILM
+    ON Romanzi.CodiceR = Film.CodiceR
+WHERE
+	Autori.Nazione = "Italia";
